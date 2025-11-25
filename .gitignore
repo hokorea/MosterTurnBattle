@@ -53,3 +53,46 @@ dkms.conf
 
 # debug information files
 *.dwo
+# Build output
+bin/
+obj/
+build/
+out/
+
+# Save data
+save/
+*.sav
+*.dat
+*.bin
+
+# Game generated data
+data/*.cache
+data/*.tmp
+data/backup/
+
+# Logs
+*.log
+logs/
+
+# Editor/IDE
+.vscode/
+*.code-workspace
+.idea/
+*.vcxproj.user
+*.suo
+*.user
+*.userosscache
+*.sdf
+*.cachefile
+*.ipch
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Temporary files
+*.swp
+*.tmp
+*.bak
+*~
