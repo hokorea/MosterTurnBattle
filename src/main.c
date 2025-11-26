@@ -30,6 +30,7 @@ int main(void){
     while (player.hp > 0 && enemy.hp > 0) {
         battle_turn(&player, &enemy, &player_move, &enemy_move);
 
+        // 디버깅
         printf("\n--- 턴 종료 후 상태 ---\n");
         print_status(&player);
         print_status(&enemy);
@@ -37,13 +38,10 @@ int main(void){
     }
 
     // 최종 결과
-    if (player.hp > 0 && enemy.hp <= 0) {
+    if (player.hp > 0) {
         printf("\n플레이어가 승리했다!\n");
-    } else if (enemy.hp > 0 && player.hp <= 0) {
-        printf("\n플레이어는 눈앞이 깜깜해졌다...\n");
     } else {
-        printf("\n둘 다 쓰러졌다!? (무승부)\n");
-    }
+        printf("\n플레이어는 눈앞이 깜깜해졌다...\n");
 
     return 0;
 }
