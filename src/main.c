@@ -42,6 +42,6 @@ int main(void){
         printf("\n플레이어가 승리했다!\n");
     } else {
         printf("\n플레이어는 눈앞이 깜깜해졌다...\n");
-
+    }
     return 0;
 }
