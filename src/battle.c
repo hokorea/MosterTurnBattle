@@ -1,8 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <time.h>
 
 #include "battle.h"
+
+#define MAX_MOVES 4
 
 // 데미지 계산 함수
 int calc_damage(Pokemon *attacker, Pokemon *defender, Move *move){
@@ -18,7 +19,8 @@ void print_status(Pokemon *p){
 
 // 한 턴 동안 플레이어 → 적, 적 → 플레이어 순서로 공격
 void battle_turn(Pokemon *player, Pokemon *enemy, Move *player_move, Move *enemy_move){
-    printf("%s", enemy_move->name); // 디버깅
+    // 제대로 된 입력이 아닌 경우 return
+    if (player_move == NULL) return;
     // 플레이어 공격
     printf("\n%s의 %s!\n", player->name, player_move->name);
     int dmg_to_enemy = calc_damage(player, enemy, player_move);
@@ -50,7 +52,7 @@ void battle_turn(Pokemon *player, Pokemon *enemy, Move *player_move, Move *enemy
 
 // 기술 목록 출력
 void print_moves(Pokemon *p){
-    for (int i = 0; i < 4; i++){
+    for (int i = 0; i < MAX_MOVES; i++){
         if (i >= p->move_count)
             printf("%d) -\n", i + 1);
         else
@@ -73,6 +75,7 @@ Move* choose_player_move(Pokemon *p){
 
 Move* choose_enemy_move(Pokemon *p){
     int choose_num = rand() % p->move_count;
-    printf("%d %d\n", p->move_count, choose_num);
+    // 디버깅
+    // printf("%d %d\n", p->move_count, choose_num);
     return &(p->moves[choose_num]);
 }
