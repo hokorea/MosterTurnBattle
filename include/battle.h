@@ -10,6 +10,10 @@ typedef struct Move{
 
 typedef struct Pokemon{
     const char *name; // 포켓몬 이름
+
+    int level; // 레벨
+    int exp; // 현재 경험치
+
     int max_hp; // 최대 체력
     int hp; // 현재 체력
     int atk; // 공격력
@@ -36,5 +40,11 @@ Move* choose_player_move(Pokemon *p);
 
 // 적이 사용할 기술 선택
 Move* choose_enemy_move(Pokemon *p);
+
+// 경험치 획득
+void gain_exp(Pokemon *p, int amount);
+
+// 레벨업 시 스탯 증가
+void level_up_stats(Pokemon *p);
 
 #endif

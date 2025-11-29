@@ -60,6 +60,7 @@ void print_moves(Pokemon *p){
     }
 }
 
+// 플레이어 기술 선택
 Move* choose_player_move(Pokemon *p){
     int choose_num;
 
@@ -73,9 +74,33 @@ Move* choose_player_move(Pokemon *p){
     }
 }
 
+// 적 기술 선택 (현재: 랜덤)
 Move* choose_enemy_move(Pokemon *p){
     int choose_num = rand() % p->move_count;
     // 디버깅
     // printf("%d %d\n", p->move_count, choose_num);
     return &(p->moves[choose_num]);
+}
+
+// 경험치 획득
+void gain_exp(Pokemon *p, int amount){
+    p->exp += amount;
+
+    // 레벨 * 10 이상이면 레벨업
+    int needed = p->level * 10;
+    while (p->exp >= needed){
+        p->exp -= needed;
+        p->level++;
+        level_up_stats(p);
+        needed = p->level * 10;
+    }
+}
+
+// 레벨업 시 스탯 증가
+void level_up_stats(Pokemon *p){
+    p->max_hp += 3;
+    p->atk += 2;
+    p->def += 1;
+
+    printf("\n%s의 레벨이 올랐다! Lv.%d\n", p->name, p->level);
 }

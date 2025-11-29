@@ -13,6 +13,8 @@ int main(void){
     // 플레이어 포켓몬 설정
     Pokemon player = {
         "피카츄",
+        5, 45,
+
         35, 35, 55, 40,
         {
             {"전기쇼크", 40},
@@ -24,6 +26,8 @@ int main(void){
     // 적 포켓몬 설정
     Pokemon enemy ={
         "구구", 
+        3, 0,
+
         40, 40, 45, 40,
         {
             {"몸통박치기", 35},
@@ -55,7 +59,9 @@ int main(void){
 
     // 최종 결과
     if (player.hp > 0) {
-        printf("\n%s는(은) %d 경험치를 얻었다!\n\n", player.name, 10);
+        int gained_exp = 10;
+        printf("\n%s는(은) %d 경험치를 얻었다!\n\n", player.name, gained_exp);
+        gain_exp(&player, gained_exp);
     } else {
         printf("\n%s에게는\n싸울 수 있는 포켓몬이 없다!\n\n", player.name);
         printf("%s는(은) 당황해서\n%d원을 잃어버렸다!\n\n", player.name, 10);
