@@ -1,13 +1,9 @@
 #ifndef BATTLE_H
 #define BATTLE_H
 
-#define MAX_MOVES 4
+#include "types.h"
 
-typedef enum MoveCategory{
-    MOVE_PHYSICAL, // 물리: atk vs def
-    MOVE_SPECIAL, // 특수: sp_atk vs sp_def
-    MOVE_STATUS // 변화기: 능력치 변화, 상태이상 등
-} MoveCategory;
+#define MAX_MOVES 4
 
 typedef struct Move{
     const char *name; // 기술 이름
@@ -40,7 +36,7 @@ int calc_damage(Pokemon *attacker, Pokemon *defender, Move *move);
 // 포켓몬 상태 출력
 void print_status(Pokemon *p);
 
-// 한 턴 진행 (플레이어 -> 적 -> 반격)
+// 한 턴 진행 (플레이어 <-> 적)
 void battle_turn(Pokemon *player, Pokemon *enemy, Move *player_move, Move *enemy_move);
 
 // 플레이어 기술 목록 출력
@@ -57,5 +53,8 @@ void gain_exp(Pokemon *p, int amount);
 
 // 레벨업 시 스탯 증가
 void level_up_stats(Pokemon *p);
+
+// 공격
+void do_attack(Pokemon *attacker, Pokemon *defender, Move *move, ActorType attacker_type, ActorType defender_type);
 
 #endif

@@ -14,8 +14,8 @@ int main(void){
     Pokemon player = {
         "피카츄",
         5, 45,
-
-        35, 35, 55, 40,
+        35, 35,  
+        55, 40, 50, 50, 90,
         {
             {"전기쇼크", 40, MOVE_SPECIAL},
             {"울음소리", 0, MOVE_STATUS}
@@ -27,8 +27,8 @@ int main(void){
     Pokemon enemy ={
         "구구", 
         3, 0,
-
-        40, 40, 45, 40,
+        40, 40,    
+        45, 40, 35, 35, 56,
         {
             {"몸통박치기", 35, MOVE_PHYSICAL},
             {"모래뿌리기", 0, MOVE_STATUS}

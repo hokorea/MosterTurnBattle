@@ -31,8 +31,10 @@ int calc_damage(Pokemon *attacker, Pokemon *defender, Move *move){
     int rand_percent = (rand() % 16) + 85; // 85 ~ 100
     int damage = base * rand_percent / 100;
 
+    // Damage ≈ [ ((2 × Level / 5 + 2) × Power × Atk / Def) / 50 + 2 ] × Random(0.85–1.00)
+
     if (damage < 1) damage = 1;
-    
+
     return damage;
 }
 
@@ -41,37 +43,61 @@ void print_status(Pokemon *p){
     printf("%s  HP: %d / %d\n", p->name, p->hp, p->max_hp);
 }
 
-// 한 턴 동안 플레이어 → 적, 적 → 플레이어 순서로 공격
+// 한 턴 동안 선공, 후공으로 공격
 void battle_turn(Pokemon *player, Pokemon *enemy, Move *player_move, Move *enemy_move){
     // 제대로 된 입력이 아닌 경우 return
     if (player_move == NULL) return;
-    // 플레이어 공격
-    printf("\n%s의 %s!\n", player->name, player_move->name);
-    int dmg_to_enemy = calc_damage(player, enemy, player_move);
-    enemy->hp -= dmg_to_enemy;
-    if (enemy->hp < 0) enemy->hp = 0;
 
-    // 디버깅
-    printf("%s에게 %d의 데미지!\n", enemy->name, dmg_to_enemy);
+    // 선공 후공 선택
+    Pokemon *first, *second;
+    Move *first_move, *second_move;
+    ActorType first_type;
+    ActorType second_type;
 
-    // 적 쓰러졌는지 체크
-    if (enemy->hp <= 0) {
-        printf("야생 %s는(은) 쓰러졌다!\n", enemy->name);
+    if (player->speed > enemy->speed){
+        first = player;
+        first_move = player_move;
+        second = enemy;
+        second_move = enemy_move;
+        first_type = ACTOR_PLAYER_MON;
+        second_type = ACTOR_WILD_MON;
+    } else if (player->speed < enemy->speed){
+        first = enemy;
+        first_move = enemy_move;
+        second = player;
+        second_move = player_move;
+        first_type = ACTOR_WILD_MON;
+        second_type = ACTOR_PLAYER_MON;
+    } else{
+        // 스피드가 같으면 랜덤으로 선공 결정
+        if (rand() % 2 == 0){
+            first = player;
+            first_move = player_move;
+            second = enemy;
+            second_move = enemy_move;
+            first_type = ACTOR_PLAYER_MON;
+            second_type = ACTOR_WILD_MON;
+        } else{
+            first = enemy;
+            first_move = enemy_move;
+            second = player;
+            second_move = player_move;
+            first_type = ACTOR_WILD_MON;
+            second_type = ACTOR_PLAYER_MON;
+        }
+    }
+
+    // 선공 공격
+    do_attack(first, second, first_move, first_type, second_type);
+
+    // 첫 번째 공격에 맞고 쓰러졌으면 두 번째 행동 없음
+    if (second->hp <= 0){
         return;
     }
 
-    // 적의 반격
-    printf("\n야생 %s의 %s!\n", enemy->name, enemy_move->name);
-    int dmg_to_player = calc_damage(enemy, player, enemy_move);
-    player->hp -= dmg_to_player;
-    if (player->hp < 0) player->hp = 0;
-
-    // 디버깅
-    printf("%s에게 %d의 데미지!\n", player->name, dmg_to_player);
-
-    if (player->hp <= 0) {
-        printf("%s는(은) 쓰러졌다!\n", player->name);
-    }
+    // 후공 반격
+    do_attack(second, first, second_move, second_type, first_type);
+    
 }
 
 // 기술 목록 출력
@@ -127,4 +153,51 @@ void level_up_stats(Pokemon *p){
     p->def += 1;
 
     printf("\n%s의 레벨이 올랐다! Lv.%d\n", p->name, p->level);
+}
+
+void do_attack(Pokemon *attacker, Pokemon *defender, Move *move, ActorType attacker_type, ActorType defender_type){
+    if (move == NULL) return;
+
+    // 1) 누가 치는지에 따라 문구 다르게
+    switch (attacker_type){
+    case ACTOR_PLAYER_MON:{
+        printf("\n%s의 %s!\n", attacker->name, move->name);
+        break;
+    }
+    case ACTOR_WILD_MON:{
+        printf("\n야생 %s의 %s!\n", attacker->name, move->name);
+        break;
+    }
+    case ACTOR_ENEMY_TRAINER_MON:
+        printf("\n적의 %s의 %s!\n", attacker->name, move->name);
+        break;
+    }
+
+    int damage = calc_damage(attacker, defender, move);
+    defender->hp -= damage;
+    if (defender->hp < 0) defender->hp = 0;
+
+    // 디버깅
+    printf("%s에게 %d의 데미지!\n", defender->name, damage);
+
+    // 공격을 받는 쪽이 쓰러졌는지 체크
+    if (defender->hp <= 0) {
+        switch (defender_type)
+        {
+        case ACTOR_WILD_MON:{
+            printf("야생 %s는(은) 쓰러졌다!\n", defender->name);
+            break;
+        }
+        case ACTOR_PLAYER_MON:{
+            printf("%s는(은) 쓰러졌다!\n", defender->name);
+            break;
+        }
+        case ACTOR_ENEMY_TRAINER_MON:{
+            printf("적의 %s는(은) 쓰러졌다!\n", defender->name);
+            break;
+        }
+        }
+        
+        return;
+    }
 }
