@@ -3,9 +3,16 @@
 
 #define MAX_MOVES 4
 
+typedef enum MoveCategory{
+    MOVE_PHYSICAL, // 물리: atk vs def
+    MOVE_SPECIAL, // 특수: sp_atk vs sp_def
+    MOVE_STATUS // 변화기: 능력치 변화, 상태이상 등
+} MoveCategory;
+
 typedef struct Move{
     const char *name; // 기술 이름
     int power; // 위력
+    MoveCategory category;
 } Move;
 
 typedef struct Pokemon{
@@ -16,8 +23,12 @@ typedef struct Pokemon{
 
     int max_hp; // 최대 체력
     int hp; // 현재 체력
-    int atk; // 공격력
-    int def; // 방어력
+
+    int atk; // 공격
+    int def; // 방어
+    int sp_atk; // 특수공격
+    int sp_def; // 특수방어
+    int speed; // 속도
 
     Move moves[MAX_MOVES]; // 기술
     int move_count; // 기술 개수

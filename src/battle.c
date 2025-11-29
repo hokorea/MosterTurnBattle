@@ -7,8 +7,32 @@
 
 // 데미지 계산 함수
 int calc_damage(Pokemon *attacker, Pokemon *defender, Move *move){
-    int damage = move->power + attacker->atk - defender->def;
+    int attack_stat, defend_stat;
+
+    if (move->category == MOVE_PHYSICAL){
+        attack_stat = attacker->atk;
+        defend_stat = defender->def;
+    } else if (move->category == MOVE_SPECIAL) {
+        attack_stat = attacker->sp_atk;
+        defend_stat = defender->sp_def;
+    } else {
+        // STATUS 기술은 여기서 데미지 안 줌 (나중에 효과 따로 처리 예정)
+        return 0;
+    }
+
+    if (defend_stat <= 0) defend_stat = 1; // 0 나누기 방지
+
+    int level = attacker->level;
+
+    // 1) 기본 데미지 계산 (정수 연산 주의)
+    int base = (((2 * level / 5 + 2) * move->power * attack_stat) / defend_stat) / 50 + 2;
+    
+    // 2) 난수 보정 (85 ~ 100%)
+    int rand_percent = (rand() % 16) + 85; // 85 ~ 100
+    int damage = base * rand_percent / 100;
+
     if (damage < 1) damage = 1;
+    
     return damage;
 }
 
