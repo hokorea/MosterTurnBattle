@@ -17,8 +17,8 @@ int main(void){
         35, 35,  
         55, 40, 50, 50, 90,
         {
-            {"전기쇼크", 40, MOVE_SPECIAL},
-            {"울음소리", 0, MOVE_STATUS}
+            {"전기쇼크", 40, MOVE_SPECIAL, 100},
+            {"울음소리", 0, MOVE_STATUS, 100}
         },
         2
     };
@@ -30,8 +30,8 @@ int main(void){
         40, 40,    
         45, 40, 35, 35, 56,
         {
-            {"몸통박치기", 35, MOVE_PHYSICAL},
-            {"모래뿌리기", 0, MOVE_STATUS}
+            {"몸통박치기", 35, MOVE_PHYSICAL, 95},
+            {"모래뿌리기", 0, MOVE_STATUS, 100}
         },
         2
     };

@@ -8,7 +8,8 @@
 typedef struct Move{
     const char *name; // 기술 이름
     int power; // 위력
-    MoveCategory category;
+    MoveCategory category; // 물리/특수/변화
+    int accuracy; // 명중률 (0 ~ 100)
 } Move;
 
 typedef struct Pokemon{

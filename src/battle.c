@@ -168,11 +168,36 @@ void do_attack(Pokemon *attacker, Pokemon *defender, Move *move, ActorType attac
         printf("\n야생 %s의 %s!\n", attacker->name, move->name);
         break;
     }
-    case ACTOR_ENEMY_TRAINER_MON:
-        printf("\n적의 %s의 %s!\n", attacker->name, move->name);
+    case ACTOR_ENEMY_TRAINER_MON:{
+        printf("\n상대 %s의 %s!\n", attacker->name, move->name);
         break;
     }
+    }
 
+    // 2) 명중률 체크
+    int roll = rand() % 100; // 0 ~ 99
+
+    if (roll >= move->accuracy) {
+        // 빗나감
+        switch (attacker_type)
+        {
+        case ACTOR_PLAYER_MON:{
+            printf("\n그러나 %s의 공격은 빗나갔다!\n", attacker->name);
+            break;
+        }
+        case ACTOR_WILD_MON:{
+            printf("\n그러나 야생 %s의 공격은 빗나갔다!\n", attacker->name);
+            break;
+        }
+        case ACTOR_ENEMY_TRAINER_MON:{
+            printf("\n그러나 상대 %s의 공격은 빗나갔다!\n", attacker->name);
+            break;
+        }
+        }
+        return; // 데미지 없이 턴 종료
+    }
+
+    // 3) 데미지 출력
     int damage = calc_damage(attacker, defender, move);
     defender->hp -= damage;
     if (defender->hp < 0) defender->hp = 0;
@@ -193,11 +218,10 @@ void do_attack(Pokemon *attacker, Pokemon *defender, Move *move, ActorType attac
             break;
         }
         case ACTOR_ENEMY_TRAINER_MON:{
-            printf("적의 %s는(은) 쓰러졌다!\n", defender->name);
+            printf("상대 %s는(은) 쓰러졌다!\n", defender->name);
             break;
         }
         }
-        
         return;
     }
 }
