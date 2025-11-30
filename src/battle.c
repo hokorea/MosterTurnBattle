@@ -158,7 +158,7 @@ void level_up_stats(Pokemon *p){
 void do_attack(Pokemon *attacker, Pokemon *defender, Move *move, ActorType attacker_type, ActorType defender_type){
     if (move == NULL) return;
 
-    // 1) 누가 치는지에 따라 문구 다르게
+    // 누가 치는지에 따라 문구 다르게
     switch (attacker_type){
     case ACTOR_PLAYER_MON:{
         printf("\n%s의 %s!\n", attacker->name, move->name);
@@ -174,7 +174,7 @@ void do_attack(Pokemon *attacker, Pokemon *defender, Move *move, ActorType attac
     }
     }
 
-    // 2) 명중률 체크
+    // 명중률 체크
     int roll = rand() % 100; // 0 ~ 99
 
     if (roll >= move->accuracy) {
@@ -197,8 +197,20 @@ void do_attack(Pokemon *attacker, Pokemon *defender, Move *move, ActorType attac
         return; // 데미지 없이 턴 종료
     }
 
-    // 3) 데미지 출력
+    // 급소 판정
+    int is_crit = (rand() % 16 == 0);
+
+    // 데미지 계산
     int damage = calc_damage(attacker, defender, move);
+
+    // 급소 배율
+    if (damage > 0 && is_crit) { 
+        damage = damage * 3 / 2; 
+
+        printf("\n급소에 맞았다!\n");
+    }
+
+    // HP 감소
     defender->hp -= damage;
     if (defender->hp < 0) defender->hp = 0;
 
