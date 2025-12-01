@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "battle.h"
 
@@ -10,13 +11,12 @@ int calc_damage(Pokemon *attacker, Pokemon *defender, Move *move){
     int attack_stat, defend_stat;
 
     if (move->category == MOVE_PHYSICAL){
-        attack_stat = attacker->atk;
-        defend_stat = defender->def;
+        attack_stat = apply_stage(attacker->atk, attacker->atk_stage);
+        defend_stat = apply_stage(defender->def, defender->def_stage);
     } else if (move->category == MOVE_SPECIAL) {
-        attack_stat = attacker->sp_atk;
-        defend_stat = defender->sp_def;
+        attack_stat = apply_stage(attacker->sp_atk, attacker->sp_atk_stage);
+        defend_stat = apply_stage(defender->sp_def, defender->sp_def_stage);
     } else {
-        // STATUS 기술은 여기서 데미지 안 줌 (나중에 효과 따로 처리 예정)
         return 0;
     }
 
@@ -197,6 +197,11 @@ void do_attack(Pokemon *attacker, Pokemon *defender, Move *move, ActorType attac
         return; // 데미지 없이 턴 종료
     }
 
+    if (move->category == MOVE_STATUS){
+        apply_status_move(attacker, defender, move, attacker_type, defender_type);
+        return;
+    }
+
     // 급소 판정
     int is_crit = (rand() % 16 == 0);
 
@@ -235,5 +240,28 @@ void do_attack(Pokemon *attacker, Pokemon *defender, Move *move, ActorType attac
         }
         }
         return;
+    }
+}
+
+int apply_stage(int stat, int stage){
+    if (stage > 6) stage = 6;
+    if (stage < -6) stage = -6;
+
+    if (stage >= 0){
+        return stat * (2 + stage) / 2;
+    } else {
+        return stat * 2 / (2 - stage);
+    }
+}
+
+void apply_status_move(Pokemon *attacker, Pokemon *defender, Move *move, ActorType attacker_type, ActorType defender_type){
+    if (strcmp(move->name, "울음소리") == 0){
+        if (defender->atk_stage > -6){
+            defender->atk_stage--;
+
+            printf("%s의\n공격이 떨어졌다!\n", defender->name);
+        } else{
+            printf("%s의\n공격은 더 떨어지지 않는다!\n", defender->name);
+        }
     }
 }

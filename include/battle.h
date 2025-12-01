@@ -27,6 +27,10 @@ typedef struct Pokemon{
     int sp_def; // 특수방어
     int speed; // 속도
 
+    // 단계 필드 (-6 ~ +6)
+    int atk_stage, def_stage, sp_atk_stage, sp_def_stage, 
+    speed_stage, accuracy_stage;
+
     Move moves[MAX_MOVES]; // 기술
     int move_count; // 기술 개수
 } Pokemon;
@@ -56,6 +60,14 @@ void gain_exp(Pokemon *p, int amount);
 void level_up_stats(Pokemon *p);
 
 // 공격
-void do_attack(Pokemon *attacker, Pokemon *defender, Move *move, ActorType attacker_type, ActorType defender_type);
+void do_attack(Pokemon *attacker, Pokemon *defender, Move *move, 
+    ActorType attacker_type, ActorType defender_type);
+
+// 단계
+int apply_stage(int stat, int stage);
+
+// 변화 기술 처리
+void apply_status_move(Pokemon *attacker, Pokemon *defender, 
+    Move *move, ActorType attacker_type, ActorType defender_type);
 
 #endif
