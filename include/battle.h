@@ -67,7 +67,6 @@ void do_attack(Pokemon *attacker, Pokemon *defender, Move *move,
 int apply_stage(int stat, int stage);
 
 // 변화 기술 처리
-void apply_status_move(Pokemon *attacker, Pokemon *defender, 
-    Move *move, ActorType attacker_type, ActorType defender_type);
+void apply_status_move(Pokemon *defender, Move *move, ActorType defender_type);
 
 #endif

@@ -177,7 +177,7 @@ void do_attack(Pokemon *attacker, Pokemon *defender, Move *move, ActorType attac
     // 명중률 체크
     int roll = rand() % 100; // 0 ~ 99
 
-    if (roll >= move->accuracy) {
+    if (roll >= apply_stage(move->accuracy, attacker->accuracy_stage)) {
         // 빗나감
         switch (attacker_type)
         {
@@ -198,7 +198,7 @@ void do_attack(Pokemon *attacker, Pokemon *defender, Move *move, ActorType attac
     }
 
     if (move->category == MOVE_STATUS){
-        apply_status_move(attacker, defender, move, attacker_type, defender_type);
+        apply_status_move(defender, move, defender_type);
         return;
     }
 
@@ -254,7 +254,21 @@ int apply_stage(int stat, int stage){
     }
 }
 
-void apply_status_move(Pokemon *attacker, Pokemon *defender, Move *move, ActorType attacker_type, ActorType defender_type){
+void apply_status_move(Pokemon *defender, Move *move, ActorType defender_type){
+    switch (defender_type)
+    {
+    case ACTOR_WILD_MON:{
+        printf("야생 ");
+        break;
+    }
+    case ACTOR_ENEMY_TRAINER_MON:{
+        printf("상대 ");
+        break;
+    }
+    default:
+        break;
+    }
+    
     if (strcmp(move->name, "울음소리") == 0){
         if (defender->atk_stage > -6){
             defender->atk_stage--;
@@ -262,6 +276,16 @@ void apply_status_move(Pokemon *attacker, Pokemon *defender, Move *move, ActorTy
             printf("%s의\n공격이 떨어졌다!\n", defender->name);
         } else{
             printf("%s의\n공격은 더 떨어지지 않는다!\n", defender->name);
+        }
+    }
+
+    if (strcmp(move->name, "모래뿌리기") == 0){
+        if (defender->accuracy_stage > -6){
+            defender->accuracy_stage--;
+
+            printf("%s의\n명중률이 떨어졌다!\n", defender->name);
+        } else{
+            printf("%s의\n명중률은 더 떨어지지 않는다!\n", defender->name);
         }
     }
 }
