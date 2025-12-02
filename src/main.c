@@ -3,20 +3,20 @@
 #include <time.h>
 #include <windows.h>
 
+#include "../include/game.h"
 #include "../include/battle.h"
 #include "../include/trainer.h"
+#include "../include/types.h"
 
 int main(void){
+    printf("[DEBUG BUILD] %s %s\n", __DATE__, __TIME__);
+
     srand(time(NULL));
     SetConsoleOutputCP(CP_UTF8);
     SetConsoleCP(CP_UTF8);
-    
+
     Trainer player;
-    char input_name[16];
-    
-    printf("너의 이름은 무엇이니? => ");
-    scanf("%s", input_name);
-    init_trainer(&player, input_name);
+    game_start(&player);
 
     // 플레이어 포켓몬 설정
     Pokemon pikachu = {
@@ -25,9 +25,10 @@ int main(void){
         35, 35,  
         55, 40, 50, 50, 90,
         0, 0, 0, 0, 0, 0,
+        {TYPE_ELECTRIC, TYPE_NONE},
         {
-            {"전기쇼크", 40, MOVE_SPECIAL, 100},
-            {"울음소리", 0, MOVE_STATUS, 100}
+            {"전기쇼크", 40, MOVE_SPECIAL, 100, 30, 30, TYPE_ELECTRIC},
+            {"울음소리", 0, MOVE_STATUS, 100, 40, 40, TYPE_NORMAL}
         },
         2
     };
@@ -39,9 +40,10 @@ int main(void){
         40, 40,    
         45, 40, 35, 35, 56,
         0, 0, 0, 0, 0, 0,
+        {TYPE_NORMAL, TYPE_FLYING},
         {
-            {"몸통박치기", 35, MOVE_PHYSICAL, 95},
-            {"모래뿌리기", 0, MOVE_STATUS, 100}
+            {"몸통박치기", 35, MOVE_PHYSICAL, 95, 35, 35, TYPE_NORMAL},
+            {"모래뿌리기", 0, MOVE_STATUS, 100, 15, 15, TYPE_GROUND}
         },
         2
     };
@@ -57,14 +59,15 @@ int main(void){
     printf("앗! 야생 %s(이)가 튀어나왔다!\n", enemy.name);
     printf("가랏! %s!\n", player.party[0].name);
 
-    print_moves(&player.party[0]);
-
     // 둘 중 하나가 쓰러질 때까지 반복
     while (player.party[0].hp > 0 && enemy.hp > 0) {
+        print_moves(&player.party[0]);
+        printf("%d", player.party[0].move_count);
 
-        battle_turn(&player.party[0], &enemy, choose_player_move(&player.party[0]), choose_enemy_move(&enemy));
+        // battle_turn(&player.party[0], &enemy, choose_player_move(&player.party[0]), choose_enemy_move(&enemy));
 
         // 디버깅
+        break;
         printf("\n--- 턴 종료 후 상태 ---\n");
         print_status(&player.party[0]);
         print_status(&enemy);

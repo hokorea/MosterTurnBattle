@@ -10,6 +10,11 @@ typedef struct Move{
     int power; // 위력
     MoveCategory category; // 물리/특수/변화
     int accuracy; // 명중률 (0 ~ 100)
+
+    int max_pp; // 최대 pp(파워포인트 : 기술을 사용할 수 있는 횟수)
+    int pp; // 현재 pp
+
+    Type type; // 타입
 } Move;
 
 typedef struct Pokemon{
@@ -30,6 +35,8 @@ typedef struct Pokemon{
     // 단계 필드 (-6 ~ +6)
     int atk_stage, def_stage, sp_atk_stage, sp_def_stage, 
     speed_stage, accuracy_stage;
+
+    Type type[2]; // 타입
 
     Move moves[MAX_MOVES]; // 기술
     int move_count; // 기술 개수
@@ -68,5 +75,8 @@ int apply_stage(int stat, int stage);
 
 // 변화 기술 처리
 void apply_status_move(Pokemon *defender, Move *move, ActorType defender_type);
+
+// 타입 상성
+float get_type_effectiveness(Type move_type, Type target_type);
 
 #endif

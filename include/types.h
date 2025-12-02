@@ -15,4 +15,12 @@ typedef enum MoveCategory{
     MOVE_STATUS // 변화기: 능력치 변화, 상태이상 등
 }MoveCategory;
 
+typedef enum Type{
+    TYPE_NORMAL,
+    TYPE_ELECTRIC,
+    TYPE_FLYING,
+    TYPE_GROUND,
+    TYPE_NONE
+}Type;
+
 #endif

@@ -29,6 +29,19 @@ int calc_damage(Pokemon *attacker, Pokemon *defender, Move *move){
     int rand_percent = (rand() % 16) + 85; // 85 ~ 100
     int damage = base * rand_percent / 100;
 
+    // 3) 타입에 따른 데미지 변화
+    float eff = 1.0f;
+    for (int i = 0; i < 2; i++)
+        eff *= get_type_effectiveness(move->type, defender->type[i]);
+
+    if (eff > 1.0f)
+        printf("효과가 굉장했다!\n");
+    else if (eff == 0.0f)
+        printf("효과가 없는 듯하다...\n");
+    else if (eff < 1.0f)
+        printf("별로 효과가 없는 듯하다...\n");
+
+    damage = (int)(damage * eff);
     // Damage ≈ [ ((2 × Level / 5 + 2) × Power × Atk / Def) / 50 + 2 ] × Random(0.85–1.00)
 
     if (damage < 1) damage = 1;
@@ -115,7 +128,14 @@ Move* choose_player_move(Pokemon *p){
     printf("사용할 기술을 선택하세요: ");
     scanf("%d", &choose_num);
     if (choose_num <= p->move_count && choose_num > 0){
-        return &(p->moves[choose_num - 1]);
+        if (p->moves[choose_num - 1].pp <= 0){
+            printf("남은 기술 포인트가 없다!\n");
+            return NULL;
+        }
+        else{
+            p->moves[choose_num - 1].pp--;
+            return &(p->moves[choose_num - 1]);
+        }
     } else {
         printf("잘못된 입력입니다...\n");
         return NULL;
@@ -124,9 +144,13 @@ Move* choose_player_move(Pokemon *p){
 
 // 적 기술 선택 (현재: 랜덤)
 Move* choose_enemy_move(Pokemon *p){
-    int choose_num = rand() % p->move_count;
+    int choose_num;
+    do{
+        choose_num = rand() % p->move_count;
+    }while (p->moves[choose_num].pp <= 0);
     // 디버깅
     // printf("%d %d\n", p->move_count, choose_num);
+
     return &(p->moves[choose_num]);
 }
 
@@ -286,4 +310,20 @@ void apply_status_move(Pokemon *defender, Move *move, ActorType defender_type){
             printf("%s의\n명중률은 더 떨어지지 않는다!\n", defender->name);
         }
     }
+}
+
+float get_type_effectiveness(Type move_type, Type target_type){
+    if (target_type == TYPE_NONE) return 1.0f;
+
+    // 전기 → 비행 = 2배
+    if (move_type == TYPE_ELECTRIC && target_type == TYPE_FLYING)
+        return 2.0f;
+
+    // 전기 → 전기 = 반감 (예시)
+    if (move_type == TYPE_ELECTRIC && target_type == TYPE_ELECTRIC)
+        return 0.5f;
+
+    // 노말 → 고스트 = 0배 이런 것도 나중에...
+
+    return 1.0f;
 }
