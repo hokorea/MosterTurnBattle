@@ -4,8 +4,6 @@
 
 #include "battle.h"
 
-#define MAX_MOVES 4
-
 // 데미지 계산 함수
 int calc_damage(Pokemon *attacker, Pokemon *defender, Move *move){
     int attack_stat, defend_stat;
