@@ -6,9 +6,42 @@
 // 초기화 시스템
 void game_start(Trainer *player){
     char input_name[16];
+    printf("\n...... ...... ......\n...... ...... ......\n");
+    printf("\n으-음 음냐 음냐...\n...... ...... ......\n");
+    printf("\n오잉? 이런 시간에\n손님이 왔는가...\n");
+    printf("\n이야- 오래 기다리게 했구나!\n");
+    printf("\n포켓몬스터의 세계에\n잘 왔다!\n");
+    printf("\n내 이름은 오박사\n");
+    printf("\n모두에게는 포켓몬 박사라고 알려져 있단다\n");
+    printf("\n그건 그렇고 너는\n모험이 처음인 게냐?\n");
+    printf("\n우선 내가\n이 세계에 대한 것을 가르쳐주마!\n");
 
-    printf("너의 이름은 무엇이니? => ");
+    printf("\n이 세계에는 포켓몬스터\n...줄여서 포켓몬이라\n불리는 생명체가\n도처에 살고 있다!\n");
+    printf("\n우리 인간은\n포켓몬과 사이좋게 살고 있지\n");
+    printf("\n함께 놀기도 하고\n힘을 합쳐 일하기도 하고\n");
+    printf("\n그리고 포켓몬끼리 싸우게 하여\n유대감을 돈독히 다지기도 하고...\n");
+    printf("\n나는 그런 포켓몬들을\n자세히 알기 위해\n");
+    printf("\n매일 연구를\n계속하고 있는 것이란다!\n");
+
+    // ========= 함수 구현 필요 ========
+    printf("\n그건 그렇고... 이제 슬슬\n자네에 대해 알아보도록 하지!\n");
+    printf("\n자네는 남자인가?\n아니면 여자인가?\n어느 쪽인가를 알려주게나\n");
+    // 남자 여자 고르는 함수 추가
+    // 자네는 %s로구나?(y/n)
+    // n면 처음부터 시작
+
+    printf("\n그럼 이름을 알려주게나!\n");
+    printf("\n당신의 이름은? => ");
     scanf("%s", input_name);
+    // n면 처음부터 시작
+    printf("%s이로구나?(y/n)\n", input_name);
+    // ================================
+    printf("\n%s!!\n준비는 되었는가?\n", input_name);
+    printf("\n드디어 이제부터\n너만의 이야기가 시작된다!\n");
+    printf("\n즐거운 일도 괴로운 일도\n한가득 너를 기다리고 있겠지!\n");
+    printf("\n꿈과 모험과!\n포켓몬스터의 세계로!\n레츠 고-!\n");
+    printf("\n그럼 다음에 다시 만나자!\n");
+
     init_trainer(player, input_name, ACTOR_PLAYER);
 }
 
@@ -65,6 +98,7 @@ int game_loop(Trainer *player){
     default:
         break;
     }
+    return 0;
 }
 
 Menu menu_select(void){
@@ -75,10 +109,12 @@ Menu menu_select(void){
 
 // 메뉴 시스템
 void show_main_menu(void){
+    printf("\n======================\n");
     printf("1) 포켓몬 배틀\n");
     printf("2) 포켓몬센터\n");
     printf("3) 프렌들리숍\n");
     printf("4) 저장하고 나가기\n");
+    printf("======================\n");
 }
 // void show_party_menu(const Trainer *player);
 
@@ -132,6 +168,14 @@ void open_friendly_shop(Trainer *player) {
 
 // 세이브, 로드, 기타 확장 요소
 void write_report(const Trainer *player){
+    printf("======================\n");
+    // n면 return
+    printf("\n지금까지의 활약을\n포켓몬 리포트로 작성할까요?(y/n)");
+    // n면 return
+    printf("\n전에 작성한 리포트에\n덮어써도 괜찮습니까?(y/n)\n");
+
+    printf("\n포켓몬 리포트를 작성하고 있습니다\n전원을 끄지 않도록 해주십시오\n");
+
     FILE *fp = fopen("save/report.txt", "w");   // 매번 새로 덮어쓰기
     if (!fp) {
         printf("리포트 파일을 열 수 없습니다: %s\n", "report.txt");
@@ -161,6 +205,6 @@ void write_report(const Trainer *player){
     fprintf(fp, "=======================\n");
     fclose(fp);
 
-    printf("리포트가 저장되었습니다! (%s)\n", "report.txt");
+    printf("\n%s는(은)\n리포트를 꼼꼼히 기록했다!\n(%s)\n", player->name, "report.txt");
 }
 // void load_game(Trainer *player);
