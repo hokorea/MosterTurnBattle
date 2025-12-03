@@ -64,7 +64,7 @@ int main(void){
         print_moves(&player.party[0]);
         printf("%d", player.party[0].move_count);
 
-        // battle_turn(&player.party[0], &enemy, choose_player_move(&player.party[0]), choose_enemy_move(&enemy));
+        battle_turn(&player.party[0], &enemy, choose_player_move(&player.party[0]), choose_enemy_move(&enemy));
 
         // 디버깅
         break;
