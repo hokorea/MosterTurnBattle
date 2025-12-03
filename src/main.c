@@ -17,12 +17,6 @@ int main(void){
 
     Trainer player;
     game_start(&player);
-    Trainer enemy = {
-        "야생",
-        ACTOR_WILD,
-        {},
-        0
-    };
 
     // 플레이어 포켓몬 설정
     Pokemon pikachu = {
@@ -38,26 +32,10 @@ int main(void){
         },
         2
     };
-
-    // 적 포켓몬 설정
-    Pokemon pidgey ={
-        "구구", 
-        3, 0,
-        40, 40,    
-        45, 40, 35, 35, 56,
-        0, 0, 0, 0, 0, 0,
-        {TYPE_NORMAL, TYPE_FLYING},
-        {
-            {"몸통박치기", 35, MOVE_PHYSICAL, 95, 35, 35, TYPE_NORMAL},
-            {"모래뿌리기", 0, MOVE_STATUS, 100, 15, 15, TYPE_GROUND}
-        },
-        2
-    };
     
     add_pokemon_to_party(&player, pikachu);
-    add_pokemon_to_party(&enemy, pidgey);
 
-    battle_loop(&player, &enemy);
+    game_loop(&player);
 
     return 0;
 }
