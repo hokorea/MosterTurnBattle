@@ -29,4 +29,6 @@ typedef struct Pokemon{
     int move_count; // 기술 개수
 } Pokemon;
 
+void init_status(Pokemon *p);
+
 #endif
