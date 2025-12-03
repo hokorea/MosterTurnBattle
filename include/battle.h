@@ -2,45 +2,12 @@
 #define BATTLE_H
 
 #include "types.h"
+#include "trainer.h"
+#include "pokemon.h"
+#include "move.h"
 
-#define MAX_MOVES 4
-
-typedef struct Move{
-    const char *name; // 기술 이름
-    int power; // 위력
-    MoveCategory category; // 물리/특수/변화
-    int accuracy; // 명중률 (0 ~ 100)
-
-    int max_pp; // 최대 pp(파워포인트 : 기술을 사용할 수 있는 횟수)
-    int pp; // 현재 pp
-
-    Type type; // 타입
-} Move;
-
-typedef struct Pokemon{
-    const char *name; // 포켓몬 이름
-
-    int level; // 레벨
-    int exp; // 현재 경험치
-
-    int max_hp; // 최대 체력
-    int hp; // 현재 체력
-
-    int atk; // 공격
-    int def; // 방어
-    int sp_atk; // 특수공격
-    int sp_def; // 특수방어
-    int speed; // 속도
-
-    // 단계 필드 (-6 ~ +6)
-    int atk_stage, def_stage, sp_atk_stage, sp_def_stage, 
-    speed_stage, accuracy_stage;
-
-    Type type[2]; // 타입
-
-    Move moves[MAX_MOVES]; // 기술
-    int move_count; // 기술 개수
-} Pokemon;
+// 배틀을 실행시킬 함수
+BattleStatus battle_loop(Trainer *player, Trainer *enemy);
 
 // 데미지 계산 함수
 int calc_damage(Pokemon *attacker, Pokemon *defender, Move *move);

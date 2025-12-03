@@ -4,6 +4,48 @@
 
 #include "battle.h"
 
+// 배틀을 실행시킬 함수
+BattleStatus battle_loop(Trainer *player, Trainer *enemy){
+    print_party(player);
+
+    printf("=== 배틀 시작! ===\n");
+    print_status(&(player->party[0]));
+    print_status(&(enemy->party[0]));
+
+    printf("앗! 야생 %s(이)가 튀어나왔다!\n", enemy->party[0].name);
+    printf("가랏! %s!\n", player->party[0].name);
+
+    // 둘 중 하나가 쓰러질 때까지 반복
+    while (player->party[0].hp > 0 && enemy->party[0].hp > 0) {
+        print_moves(&(player->party[0]));
+        // printf("%d", player.party[0].move_count);
+        
+        battle_turn(&(player->party[0]), &(enemy->party[0]), choose_player_move(&(player->party[0])), choose_enemy_move(&(enemy->party[0])));
+        
+        // 디버깅
+        // break;
+        printf("\n--- 턴 종료 후 상태 ---\n");
+        print_status(&(player->party[0]));
+        print_status(&(enemy->party[0]));
+        printf("----------------------\n");
+    }
+
+    // 최종 결과
+    if (player->party[0].hp > 0) {
+        int gained_exp = 10;
+        printf("\n%s는(은) %d 경험치를 얻었다!\n\n", player->party[0].name, gained_exp);
+        gain_exp(&(player->party[0]), gained_exp);
+        return BATTLE_WIN;
+    } else {
+        printf("\n%s에게는\n싸울 수 있는 포켓몬이 없다!\n\n", player->name);
+        printf("%s는(은) 당황해서\n%d원을 잃어버렸다!\n\n", player->name, 10);
+        printf("... ... ... ...\n\n");
+        printf("%s는(은)\n눈앞이 깜깜해졌다...\n\n", player->name);
+        printf("지쳐서 기절해 버린\n포켓몬들을 데리고\n%s는(은) 급하게\n포켓몬센터로 돌아갔다\n", player->name);
+        return BATTLE_LOSE;
+    }
+}
+
 // 데미지 계산 함수
 int calc_damage(Pokemon *attacker, Pokemon *defender, Move *move){
     int attack_stat, defend_stat;
@@ -70,15 +112,15 @@ void battle_turn(Pokemon *player, Pokemon *enemy, Move *player_move, Move *enemy
         first_move = player_move;
         second = enemy;
         second_move = enemy_move;
-        first_type = ACTOR_PLAYER_MON;
-        second_type = ACTOR_WILD_MON;
+        first_type = ACTOR_PLAYER;
+        second_type = ACTOR_WILD;
     } else if (player->speed < enemy->speed){
         first = enemy;
         first_move = enemy_move;
         second = player;
         second_move = player_move;
-        first_type = ACTOR_WILD_MON;
-        second_type = ACTOR_PLAYER_MON;
+        first_type = ACTOR_WILD;
+        second_type = ACTOR_PLAYER;
     } else{
         // 스피드가 같으면 랜덤으로 선공 결정
         if (rand() % 2 == 0){
@@ -86,15 +128,15 @@ void battle_turn(Pokemon *player, Pokemon *enemy, Move *player_move, Move *enemy
             first_move = player_move;
             second = enemy;
             second_move = enemy_move;
-            first_type = ACTOR_PLAYER_MON;
-            second_type = ACTOR_WILD_MON;
+            first_type = ACTOR_PLAYER;
+            second_type = ACTOR_WILD;
         } else{
             first = enemy;
             first_move = enemy_move;
             second = player;
             second_move = player_move;
-            first_type = ACTOR_WILD_MON;
-            second_type = ACTOR_PLAYER_MON;
+            first_type = ACTOR_WILD;
+            second_type = ACTOR_PLAYER;
         }
     }
 
@@ -182,15 +224,15 @@ void do_attack(Pokemon *attacker, Pokemon *defender, Move *move, ActorType attac
 
     // 누가 치는지에 따라 문구 다르게
     switch (attacker_type){
-    case ACTOR_PLAYER_MON:{
+    case ACTOR_PLAYER:{
         printf("\n%s의 %s!\n", attacker->name, move->name);
         break;
     }
-    case ACTOR_WILD_MON:{
+    case ACTOR_WILD:{
         printf("\n야생 %s의 %s!\n", attacker->name, move->name);
         break;
     }
-    case ACTOR_ENEMY_TRAINER_MON:{
+    case ACTOR_ENEMY_TRAINER:{
         printf("\n상대 %s의 %s!\n", attacker->name, move->name);
         break;
     }
@@ -203,15 +245,15 @@ void do_attack(Pokemon *attacker, Pokemon *defender, Move *move, ActorType attac
         // 빗나감
         switch (attacker_type)
         {
-        case ACTOR_PLAYER_MON:{
+        case ACTOR_PLAYER:{
             printf("\n그러나 %s의 공격은 빗나갔다!\n", attacker->name);
             break;
         }
-        case ACTOR_WILD_MON:{
+        case ACTOR_WILD:{
             printf("\n그러나 야생 %s의 공격은 빗나갔다!\n", attacker->name);
             break;
         }
-        case ACTOR_ENEMY_TRAINER_MON:{
+        case ACTOR_ENEMY_TRAINER:{
             printf("\n그러나 상대 %s의 공격은 빗나갔다!\n", attacker->name);
             break;
         }
@@ -248,15 +290,15 @@ void do_attack(Pokemon *attacker, Pokemon *defender, Move *move, ActorType attac
     if (defender->hp <= 0) {
         switch (defender_type)
         {
-        case ACTOR_WILD_MON:{
+        case ACTOR_WILD:{
             printf("야생 %s는(은) 쓰러졌다!\n", defender->name);
             break;
         }
-        case ACTOR_PLAYER_MON:{
+        case ACTOR_PLAYER:{
             printf("%s는(은) 쓰러졌다!\n", defender->name);
             break;
         }
-        case ACTOR_ENEMY_TRAINER_MON:{
+        case ACTOR_ENEMY_TRAINER:{
             printf("상대 %s는(은) 쓰러졌다!\n", defender->name);
             break;
         }
@@ -279,11 +321,11 @@ int apply_stage(int stat, int stage){
 void apply_status_move(Pokemon *defender, Move *move, ActorType defender_type){
     switch (defender_type)
     {
-    case ACTOR_WILD_MON:{
+    case ACTOR_WILD:{
         printf("야생 ");
         break;
     }
-    case ACTOR_ENEMY_TRAINER_MON:{
+    case ACTOR_ENEMY_TRAINER:{
         printf("상대 ");
         break;
     }
