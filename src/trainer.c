@@ -4,13 +4,13 @@
 #include "trainer.h"
 
 // 초기화
-void init_trainer(Trainer *t, const char *name){
+void init_trainer(Trainer *t, const char *name, ActorType trainer_type){
     // 이름 복사
     strncpy(t->name, name, sizeof(t->name));
     t->name[sizeof(t->name) - 1] = '\0'; // 안전 처리
 
     // 돈 초기값 설정
-    t->money = 0;
+    t->trainer_type = trainer_type;
 
     // 파티 초기화
     t->party_count = 0;
