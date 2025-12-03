@@ -13,7 +13,7 @@ void game_start(Trainer *player){
 }
 
 // 게임 루프
-void game_loop(Trainer *player){
+int game_loop(Trainer *player){
     show_main_menu();
     Menu choose;
     do{
@@ -45,12 +45,22 @@ void game_loop(Trainer *player){
             2
         };
         add_pokemon_to_party(&enemy, pidgey);
-        battle_loop(player, &enemy);
-        break;
+        if (battle_loop(player, &enemy) == BATTLE_LOSE){
+            heal_pokemon(player);
+        }
+        return 0;
     }
     case MENU_CENTER:{
         open_pokemon_center(player);
-        break;
+        return 0;
+    }
+    case MENU_SHOP:{
+        // open_friendly_shop(player);
+        return 0;
+    }
+    case MENU_REPORT:{
+        write_report(player);
+        return 1;
     }
     default:
         break;
@@ -83,17 +93,8 @@ void open_pokemon_center(Trainer *player) {
     switch (choose)
     {
     case 'y': case 'Y':{
-        printf("그럼\n맡아 드리겠습니다!\n\n");
-        for (int i = 0; i < player->party_count; i++){
-            player->party[i].hp = player->party[i].max_hp;
-            for (int j = 0; j < player->party[i].move_count; j++){
-                player->party[i].moves[j].pp = player->party[i].moves[j].max_pp;
-            }
-        }
-        printf("오래 기다리셨습니다!\n\n");
-        printf("맡겨 두신 포켓몬이\n모두 건강해졌습니다!\n\n");
-        
-        break;
+        heal_pokemon(player);
+        return;
     }
     case 'n': case 'N':
         break;
@@ -105,6 +106,24 @@ void open_pokemon_center(Trainer *player) {
     printf("======================\n");
 }
 
+void heal_pokemon(Trainer *player){
+    printf("\n그럼\n맡아 드리겠습니다!\n\n");
+    for (int i = 0; i < player->party_count; i++){
+        Pokemon *p = &(player->party[i]);
+        p->hp = p->max_hp;
+        init_status(p);
+        for (int j = 0; j < player->party[i].move_count; j++){
+            Move *m = &(player->party[i].moves[j]);
+            m->pp = m->max_pp;
+        }
+    }
+    printf("오래 기다리셨습니다!\n\n");
+    printf("맡겨 두신 포켓몬이\n모두 건강해졌습니다!\n\n");
+
+    printf("또 언제든지\n이용해 주세요!\n\n");
+    printf("======================\n");
+}
+
 /*
 void open_friendly_shop(Trainer *player) {
     // 구매, 판매 메뉴
@@ -112,5 +131,36 @@ void open_friendly_shop(Trainer *player) {
 */
 
 // 세이브, 로드, 기타 확장 요소
-// void save_game(const Trainer *player);
+void write_report(const Trainer *player){
+    FILE *fp = fopen("save/report.txt", "w");   // 매번 새로 덮어쓰기
+    if (!fp) {
+        printf("리포트 파일을 열 수 없습니다: %s\n", "report.txt");
+        return;
+    }
+
+    fprintf(fp, "=== 트레이너 리포트 ===\n\n");
+    fprintf(fp, "트레이너 이름: %s\n", player->name);
+    fprintf(fp, "파티 포켓몬 수: %d\n\n", player->party_count);
+
+    for (int i = 0; i < player->party_count; i++) {
+        Pokemon p = player->party[i];
+        fprintf(fp, "[%d] %s\n", i + 1, p.name);
+        fprintf(fp, "  레벨: %d\n", p.level);
+        fprintf(fp, "  HP: %d / %d\n", p.hp, p.max_hp);
+        fprintf(fp, "  능력치: Atk %d / Def %d / SpA %d / SpD %d / Spe %d\n",
+                p.atk, p.def, p.sp_atk, p.sp_def, p.speed);
+        fprintf(fp, "  기술:\n");
+        for (int j = 0; j < p.move_count; j++) {
+            Move m = p.moves[j];
+            fprintf(fp, "    - %s (위력 %d, 명중 %d, PP %d/%d)\n",
+                    m.name, m.power, m.accuracy, m.pp, m.max_pp);
+        }
+        fprintf(fp, "\n");
+    }
+
+    fprintf(fp, "=======================\n");
+    fclose(fp);
+
+    printf("리포트가 저장되었습니다! (%s)\n", "report.txt");
+}
 // void load_game(Trainer *player);

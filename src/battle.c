@@ -35,6 +35,10 @@ BattleStatus battle_loop(Trainer *player, Trainer *enemy){
         int gained_exp = 10;
         printf("\n%s는(은) %d 경험치를 얻었다!\n\n", player->party[0].name, gained_exp);
         gain_exp(&(player->party[0]), gained_exp);
+        for (int i = 0; i < player->party_count; i++){
+            Pokemon *p = &(player->party[i]);
+            init_status(p);
+        }
         return BATTLE_WIN;
     } else {
         printf("\n%s에게는\n싸울 수 있는 포켓몬이 없다!\n\n", player->name);

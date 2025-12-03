@@ -35,7 +35,7 @@ int main(void){
     
     add_pokemon_to_party(&player, pikachu);
 
-    game_loop(&player);
+    while (!game_loop(&player));
 
     return 0;
 }

@@ -9,7 +9,7 @@
 void game_start(Trainer *player);
 
 // 게임 루프
-void game_loop(Trainer *player);
+int game_loop(Trainer *player);
 
 Menu menu_select(void);
 
@@ -23,10 +23,11 @@ void show_main_menu(void);
 
 // 게임 시스템
 void open_pokemon_center(Trainer *player);
+void heal_pokemon(Trainer *player);
 void open_friendly_shop(Trainer *player);
 
 // // 세이브, 로드, 기타 확장 요소
-// void save_game(const Trainer *player);
+void write_report(const Trainer *player);
 // void load_game(Trainer *player);
 
 #endif
