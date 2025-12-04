@@ -16,7 +16,8 @@ int main(void){
     SetConsoleCP(CP_UTF8);
 
     Trainer player;
-    game_start(&player);
+    if (!load_report(&player))
+        game_start(&player);
 
     // 플레이어 포켓몬 설정
     Pokemon pikachu = {

@@ -28,6 +28,6 @@ void open_friendly_shop(Trainer *player);
 
 // // 세이브, 로드, 기타 확장 요소
 void write_report(const Trainer *player);
-// void load_game(Trainer *player);
+int load_report(Trainer *player);
 
 #endif

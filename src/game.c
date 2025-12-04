@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <string.h>
 
 #include "game.h"
 #include "battle.h"
@@ -12,7 +13,7 @@ void game_start(Trainer *player){
     printf("\n이야- 오래 기다리게 했구나!\n");
     printf("\n포켓몬스터의 세계에\n잘 왔다!\n");
     printf("\n내 이름은 오박사\n");
-    printf("\n모두에게는 포켓몬 박사라고 알려져 있단다\n");
+    printf("\n모두에게는 포켓몬 박사라고\n알려져 있단다\n");
     printf("\n그건 그렇고 너는\n모험이 처음인 게냐?\n");
     printf("\n우선 내가\n이 세계에 대한 것을 가르쳐주마!\n");
 
@@ -182,29 +183,96 @@ void write_report(const Trainer *player){
         return;
     }
 
-    fprintf(fp, "=== 트레이너 리포트 ===\n\n");
-    fprintf(fp, "트레이너 이름: %s\n", player->name);
-    fprintf(fp, "파티 포켓몬 수: %d\n\n", player->party_count);
+    fprintf(fp, "NAME %s\n", player->name);                // 트레이너 이름
+    fprintf(fp, "PARTY %d\n", player->party_count);        // 파티 수
 
     for (int i = 0; i < player->party_count; i++) {
         Pokemon p = player->party[i];
-        fprintf(fp, "[%d] %s\n", i + 1, p.name);
-        fprintf(fp, "  레벨: %d\n", p.level);
-        fprintf(fp, "  HP: %d / %d\n", p.hp, p.max_hp);
-        fprintf(fp, "  능력치: Atk %d / Def %d / SpA %d / SpD %d / Spe %d\n",
+
+        fprintf(fp, "\nPOKEMON\n");
+        fprintf(fp, "NAME %s\n", p.name);
+        fprintf(fp, "LEVEL %d\n", p.level);
+        fprintf(fp, "HP %d %d\n", p.hp, p.max_hp);
+        fprintf(fp, "STATS %d %d %d %d %d\n",
                 p.atk, p.def, p.sp_atk, p.sp_def, p.speed);
-        fprintf(fp, "  기술:\n");
+        fprintf(fp, "MOVES %d\n", p.move_count);
+
         for (int j = 0; j < p.move_count; j++) {
             Move m = p.moves[j];
-            fprintf(fp, "    - %s (위력 %d, 명중 %d, PP %d/%d)\n",
+            fprintf(fp, "MOVE %s %d %d %d %d\n",
                     m.name, m.power, m.accuracy, m.pp, m.max_pp);
         }
-        fprintf(fp, "\n");
     }
 
-    fprintf(fp, "=======================\n");
     fclose(fp);
+
 
     printf("\n%s는(은)\n리포트를 꼼꼼히 기록했다!\n(%s)\n", player->name, "report.txt");
 }
-// void load_game(Trainer *player);
+
+int load_report(Trainer *player) {
+    FILE *fp = fopen("save/report.txt", "r");
+    if (!fp){
+        fp = fopen("save/report.txt", "w");
+        if (!fp) return 0; // 제대로 생성됐는지 확인
+
+        fprintf(fp, "NAME Player\n");
+        fprintf(fp, "PARTY 0\n");
+
+        fclose(fp);
+        return 0;   // 기본 파일 만들었으니 새 게임 시작
+    }
+
+    char token[64];
+
+    // NAME <이름>
+    if (fscanf(fp, "%63s %15s", token, player->name) != 2 || strcmp(token, "NAME") != 0) {
+        fclose(fp);
+        return 0;   // 형식이 틀림 → 새 게임
+    }
+
+    // PARTY <숫자>
+    if (fscanf(fp, "%63s %d", token, &player->party_count) != 2 || strcmp(token, "PARTY") != 0) {
+        fclose(fp);
+        return 0;
+    }
+
+    // 값 검증
+    if (player->party_count < 0 || player->party_count > MAX_PARTY) {
+        fclose(fp);
+        return 0;
+    }
+
+    // 파티 읽기
+    for (int i = 0; i < player->party_count; i++) {
+        Pokemon *p = &player->party[i];
+
+        if (fscanf(fp, "%63s", token) != 1 || strcmp(token, "POKEMON") != 0) {
+            fclose(fp);
+            return 0;
+        }
+
+        if (fscanf(fp, "%63s %31s", token, p->name) != 2 || strcmp(token, "NAME") != 0) {
+            fclose(fp);
+            return 0;
+        }
+
+        fscanf(fp, "%63s %d", token, &p->level);     // LEVEL
+        fscanf(fp, "%63s %d %d", token, &p->hp, &p->max_hp); // HP
+        
+        fscanf(fp, "%63s %d %d %d %d %d", token,
+               &p->atk, &p->def, &p->sp_atk, &p->sp_def, &p->speed); // STATS
+        
+        fscanf(fp, "%63s %d", token, &p->move_count); // MOVES
+        if (p->move_count > MAX_MOVES) p->move_count = MAX_MOVES;
+
+        for (int j = 0; j < p->move_count; j++) {
+            Move *m = &p->moves[j];
+            fscanf(fp, "%63s %31s %d %d %d %d",
+                token, m->name, &m->power, &m->accuracy, &m->pp, &m->max_pp);
+        }
+    }
+
+    fclose(fp);
+    return 1; // 로드 성공
+}
