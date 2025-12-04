@@ -1,12 +1,12 @@
 #include <stdio.h>
 #include <string.h>
+#include <ctype.h>
 
 #include "game.h"
 #include "battle.h"
 
 // 초기화 시스템
 void game_start(Trainer *player){
-    char input_name[16];
     printf("\n...... ...... ......\n...... ...... ......\n");
     printf("\n으-음 음냐 음냐...\n...... ...... ......\n");
     printf("\n오잉? 이런 시간에\n손님이 왔는가...\n");
@@ -24,9 +24,21 @@ void game_start(Trainer *player){
     printf("\n나는 그런 포켓몬들을\n자세히 알기 위해\n");
     printf("\n매일 연구를\n계속하고 있는 것이란다!\n");
 
-    // ========= 함수 구현 필요 ========
+    while (!info_set(player));
+    
+    printf("\n%s!!\n준비는 되었는가?\n", player->name);
+    printf("\n드디어 이제부터\n너만의 이야기가 시작된다!\n");
+    printf("\n즐거운 일도 괴로운 일도\n한가득 너를 기다리고 있겠지!\n");
+    printf("\n꿈과 모험과!\n포켓몬스터의 세계로!\n레츠 고-!\n");
+    printf("\n그럼 다음에 다시 만나자!\n");
+
+    init_trainer(player, player->name, ACTOR_PLAYER);
+}
+
+int info_set(Trainer *player){
+    char *input_name = player->name;
     printf("\n그건 그렇고... 이제 슬슬\n자네에 대해 알아보도록 하지!\n");
-    printf("\n자네는 남자인가?\n아니면 여자인가?\n어느 쪽인가를 알려주게나\n");
+    // printf("\n자네는 남자인가?\n아니면 여자인가?\n어느 쪽인가를 알려주게나\n");
     // 남자 여자 고르는 함수 추가
     // 자네는 %s로구나?(y/n)
     // n면 처음부터 시작
@@ -36,14 +48,8 @@ void game_start(Trainer *player){
     scanf("%s", input_name);
     // n면 처음부터 시작
     printf("%s이로구나?(y/n)\n", input_name);
-    // ================================
-    printf("\n%s!!\n준비는 되었는가?\n", input_name);
-    printf("\n드디어 이제부터\n너만의 이야기가 시작된다!\n");
-    printf("\n즐거운 일도 괴로운 일도\n한가득 너를 기다리고 있겠지!\n");
-    printf("\n꿈과 모험과!\n포켓몬스터의 세계로!\n레츠 고-!\n");
-    printf("\n그럼 다음에 다시 만나자!\n");
 
-    init_trainer(player, input_name, ACTOR_PLAYER);
+    return ask_yes_no();
 }
 
 // 게임 루프
@@ -97,8 +103,7 @@ int game_loop(Trainer *player){
         return 0;
     }
     case MENU_REPORT:{
-        write_report(player);
-        return 1;
+        return write_report(player);
     }
     default:
         break;
@@ -129,20 +134,12 @@ void open_pokemon_center(Trainer *player) {
     printf("안녕하세요!\n포켓몬센터입니다\n\n");
     printf("여기에서는 포켓몬의\nHP를 회복시켜 드립니다\n\n");
     printf("당신의 포켓몬을\n쉬게 하겠습니까?(y/n)\n");
-    char choose;
-    scanf(" %c", &choose);
-    switch (choose)
-    {
-    case 'y': case 'Y':{
+
+    if (ask_yes_no()){
         heal_pokemon(player);
         return;
     }
-    case 'n': case 'N':
-        break;
-    default:
-        printf("잘못된 값을 입력했습니다...\n");
-        break;
-    }
+
     printf("또 언제든지\n이용해 주세요!\n\n");
     printf("======================\n");
 }
@@ -172,23 +169,27 @@ void open_friendly_shop(Trainer *player) {
 */
 
 // 세이브, 로드, 기타 확장 요소
-void write_report(const Trainer *player){
+int write_report(const Trainer *player){
     printf("======================\n");
     // n면 return
-    printf("\n지금까지의 활약을\n포켓몬 리포트로 작성할까요?(y/n)");
+    printf("\n지금까지의 활약을\n포켓몬 리포트로 작성할까요?(y/n)\n");
+    if (!ask_yes_no())
+        return 0;
     // n면 return
     printf("\n전에 작성한 리포트에\n덮어써도 괜찮습니까?(y/n)\n");
+    if (!ask_yes_no())
+        return 0;
 
     printf("\n포켓몬 리포트를 작성하고 있습니다\n전원을 끄지 않도록 해주십시오\n");
 
-    FILE *fp = fopen("save/report.txt", "w");   // 매번 새로 덮어쓰기
+    FILE *fp = fopen("save/report.txt", "w"); // 매번 새로 덮어쓰기
     if (!fp) {
         printf("리포트 파일을 열 수 없습니다: %s\n", "report.txt");
-        return;
+        return 0;
     }
 
-    fprintf(fp, "NAME %s\n", player->name);                // 트레이너 이름
-    fprintf(fp, "PARTY %d\n", player->party_count);        // 파티 수
+    fprintf(fp, "NAME %s\n", player->name); // 트레이너 이름
+    fprintf(fp, "PARTY %d\n", player->party_count); // 파티 수
 
     for (int i = 0; i < player->party_count; i++) {
         Pokemon p = player->party[i];
@@ -212,6 +213,7 @@ void write_report(const Trainer *player){
 
 
     printf("\n%s는(은)\n리포트를 꼼꼼히 기록했다!\n(%s)\n", player->name, "report.txt");
+    return 1;
 }
 
 int load_report(Trainer *player) {
@@ -224,7 +226,7 @@ int load_report(Trainer *player) {
         fprintf(fp, "PARTY 0\n");
 
         fclose(fp);
-        return 0;   // 기본 파일 만들었으니 새 게임 시작
+        return 0; // 기본 파일 만들었으니 새 게임 시작
     }
 
     char token[64];
@@ -232,7 +234,7 @@ int load_report(Trainer *player) {
     // NAME <이름>
     if (fscanf(fp, "%63s %15s", token, player->name) != 2 || strcmp(token, "NAME") != 0) {
         fclose(fp);
-        return 0;   // 형식이 틀림 → 새 게임
+        return 0; // 형식이 틀림 → 새 게임
     }
 
     // PARTY <숫자>
@@ -261,7 +263,7 @@ int load_report(Trainer *player) {
             return 0;
         }
 
-        fscanf(fp, "%63s %d", token, &p->level);     // LEVEL
+        fscanf(fp, "%63s %d", token, &p->level); // LEVEL
         fscanf(fp, "%63s %d %d", token, &p->hp, &p->max_hp); // HP
         
         fscanf(fp, "%63s %d %d %d %d %d", token,
@@ -303,4 +305,19 @@ int load_print(Trainer *player){
     printf("======================\n");
     scanf("%d", &choose);
     return choose;
+}
+
+int ask_yes_no(void){
+    char input;
+
+    while (1) {
+        scanf(" %c", &input);
+
+        input = tolower(input);
+
+        if (input == 'y') return 1;
+        if (input == 'n') return 0;
+
+        printf("잘못된 입력입니다...\n");
+    }
 }
