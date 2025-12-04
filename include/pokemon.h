@@ -5,7 +5,7 @@
 #include "move.h"
 
 typedef struct Pokemon{
-    const char *name; // 포켓몬 이름
+    char name[32]; // 포켓몬 이름
 
     int level; // 레벨
     int exp; // 현재 경험치
