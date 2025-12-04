@@ -40,6 +40,7 @@ typedef enum Type{
 
 typedef enum Menu{
     MENU_BATTLE,
+    MENU_PARTY,
     MENU_CENTER,
     MENU_SHOP,
     MENU_REPORT

@@ -53,7 +53,7 @@ int game_loop(Trainer *player){
     do{
         choose = menu_select();
     }
-    while (choose > 3); 
+    while (choose > 5); 
     switch (choose)
     {
     case MENU_BATTLE:{
@@ -84,6 +84,10 @@ int game_loop(Trainer *player){
         }
         return 0;
     }
+    case MENU_PARTY:{
+        print_party(player);
+        return 0;
+    }
     case MENU_CENTER:{
         open_pokemon_center(player);
         return 0;
@@ -112,12 +116,12 @@ Menu menu_select(void){
 void show_main_menu(void){
     printf("\n======================\n");
     printf("1) 포켓몬 배틀\n");
-    printf("2) 포켓몬센터\n");
-    printf("3) 프렌들리숍\n");
-    printf("4) 저장하고 나가기\n");
+    printf("2) 포켓몬\n");
+    printf("3) 포켓몬센터\n");
+    printf("4) 프렌들리숍\n");
+    printf("5) 저장하고 나가기\n");
     printf("======================\n");
 }
-// void show_party_menu(const Trainer *player);
 
 // 게임 시스템
 void open_pokemon_center(Trainer *player) {
@@ -274,5 +278,29 @@ int load_report(Trainer *player) {
     }
 
     fclose(fp);
-    return 1; // 로드 성공
+    while (1){
+        switch (load_print(player))
+        {
+        case 1:
+            return 1; // 로드 성공
+        case 2:{
+            return 0;
+        }
+        default:{
+            printf("잘못된 입력입니다...\n");
+        }
+        }
+    }  
+    
+}
+
+int load_print(Trainer *player){
+    int choose;
+    printf("======================\n");
+    printf("1) 모험을 계속한다\n");
+    printf("\t주인공       %s\n", player->name);
+    printf("2) 새로운 모험을 시작한다\n");
+    printf("======================\n");
+    scanf("%d", &choose);
+    return choose;
 }
