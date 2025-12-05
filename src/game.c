@@ -196,7 +196,7 @@ int write_report(const Trainer *player){
 
         fprintf(fp, "\nPOKEMON\n");
         fprintf(fp, "NAME %s\n", p.name);
-        fprintf(fp, "LEVEL %d\n", p.level);
+        fprintf(fp, "LEVEL %d %d\n", p.level, p.exp);
         fprintf(fp, "HP %d %d\n", p.hp, p.max_hp);
         fprintf(fp, "STATS %d %d %d %d %d\n",
                 p.atk, p.def, p.sp_atk, p.sp_def, p.speed);
@@ -263,7 +263,7 @@ int load_report(Trainer *player) {
             return 0;
         }
 
-        fscanf(fp, "%63s %d", token, &p->level); // LEVEL
+        fscanf(fp, "%63s %d %d", token, &p->level, &p->exp); // LEVEL
         fscanf(fp, "%63s %d %d", token, &p->hp, &p->max_hp); // HP
         
         fscanf(fp, "%63s %d %d %d %d %d", token,
