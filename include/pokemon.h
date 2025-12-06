@@ -1,10 +1,12 @@
 #ifndef POKEMON_H
 #define POKEMON_H
 
+#include "species.h"
 #include "types.h"
 #include "move.h"
 
 typedef struct Pokemon{
+    int dex_no;
     char name[32]; // 포켓몬 이름
 
     int level; // 레벨
@@ -30,5 +32,7 @@ typedef struct Pokemon{
 } Pokemon;
 
 void init_status(Pokemon *p);
+
+Pokemon create_pokemon_from_species(int dex_no, int level);
 
 #endif

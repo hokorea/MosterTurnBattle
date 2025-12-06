@@ -72,6 +72,7 @@ int game_loop(Trainer *player){
         };
         // 적 포켓몬 설정
         Pokemon pidgey ={
+            16,
             "구구", 
             3, 0,
             40, 40,    

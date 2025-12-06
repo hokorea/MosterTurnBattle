@@ -6,6 +6,7 @@
 #include "../include/game.h"
 #include "../include/battle.h"
 #include "../include/trainer.h"
+#include "../include/species.h"
 #include "../include/types.h"
 
 int main(void){
@@ -15,12 +16,21 @@ int main(void){
     SetConsoleOutputCP(CP_UTF8);
     SetConsoleCP(CP_UTF8);
 
+    // 디버깅
+    init_species_data();
+    const SpeciesData *s = get_species(2);
+    if (s) {
+        printf("Dex #%d %s: HP=%d ATK=%d\n",
+               s->dex_no, s->name, s->base_hp, s->base_atk);
+    }
+
     Trainer player;
     if (!load_report(&player)){
         game_start(&player);
-        
+
         // 플레이어 포켓몬 설정
         Pokemon pikachu = {
+            25,
             "피카츄",
             5, 45,
             35, 35,  

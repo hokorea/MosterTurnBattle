@@ -1,0 +1,4 @@
+# dex_no,name,base_hp,base_atk,base_def,base_sp_atk,base_sp_def,base_speed,type1,type2
+1,이상해씨,45,49,49,65,65,45,GRASS,POISON
+4,파이리,39,52,43,60,50,65,FIRE,NONE
+7,꼬부기,44,48,65,50,64,43,WATER,NONE
